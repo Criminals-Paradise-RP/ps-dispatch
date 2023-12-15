@@ -17,8 +17,23 @@ local function toggleUI(bool)
 end
 
 local function setupDispatch()
-    PlayerData = QBCore.Functions.GetPlayerData()
+    local playerInfo = QBCore.Functions.GetPlayerData()
     local locales = lib.getLocales()
+    PlayerData = {
+        charinfo = {
+            firstname = playerInfo.charinfo.firstname,
+            lastname = playerInfo.charinfo.lastname
+        },
+        metadata = {
+            callsign = playerInfo.metadata.callsign
+        },
+        citizenid = playerInfo.citizenid,
+        job = {
+            type = playerInfo.job.type,
+            name = playerInfo.job.name,
+            label = playerInfo.job.label
+        },
+    }
 
     Wait(1000)
 
@@ -52,12 +67,12 @@ end
 local function openMenu()
     if not isJobValid(PlayerData.job.type) then return end
 
-    local data = lib.callback.await('ps-dispatch:callback:getCalls', false)
-    if #data == 0 then
+    local calls = lib.callback.await('ps-dispatch:callback:getCalls', false)
+    if #calls == 0 then
         lib.notify({ description = locale('no_calls'), position = 'top', type = 'error' })
     else
+        SendNUIMessage({ action = 'setDispatchs', data = calls, })
         toggleUI(true)
-        SendNUIMessage({ action = 'setDispatchs', data = data, })
     end
 end
 
