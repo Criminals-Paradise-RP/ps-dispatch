@@ -13,7 +13,11 @@ function GetPlayerHeading()
 end
 
 function GetPlayerGender()
-    return PlayerData.charinfo.gender == 1 and 'Female' or 'Male'
+    local gender = locale('male')
+    if QBCore.Functions.GetPlayerData().charinfo.gender == 1 then
+        gender = locale('female')
+    end
+    return gender
 end
 
 function GetIsHandcuffed()
@@ -52,7 +56,7 @@ end
 ---@param vehicle string
 ---@return string
 local function getVehicleColor(vehicle)
-    local vehicleColor1, vehicleColor2 = GetVehicleColor(vehicle)
+    local vehicleColor1, vehicleColor2 = GetVehicleColours(vehicle)
     local color1 = Config.Colors[tostring(vehicleColor1)]
     local color2 = Config.Colors[tostring(vehicleColor2)]
 
@@ -142,7 +146,7 @@ function IsCallAllowed(message)
 
     if msgLength == 0 then return false end
     if GetIsHandcuffed() then return false end
-    if Config.PhoneRequired and not HasPhone() then return false end
+    if Config.PhoneRequired and not HasPhone() then QBCore.Functions.Notify('You need a communications device for this.', 'error', 5000) return false end
 
     return true
 end
